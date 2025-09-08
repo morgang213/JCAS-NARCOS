@@ -1,6 +1,30 @@
-# Getting Started with Create React App
+# JCAS-NARCOS v1.0.0
+
+Welcome to JCAS-NARCOS - a modern React web application ready for Windows deployment.
+
+**🎉 Version 1.0.0 Release** - This is the first stable release optimized for Windows environments.
+
+## Quick Links
+- [Release Notes](./RELEASE_NOTES.md) - What's new in v1.0.0
+- [Windows Deployment Guide](./WINDOWS_DEPLOYMENT.md) - Complete Windows setup instructions
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+
+## Windows Installation
+
+For detailed Windows setup instructions, see our [Windows Deployment Guide](./WINDOWS_DEPLOYMENT.md).
+
+**Quick Start on Windows:**
+```cmd
+# Install dependencies
+npm install
+
+# Start development server
+npm start
+
+# Build for production
+npm run build
+```
 
 ## Available Scripts
 
