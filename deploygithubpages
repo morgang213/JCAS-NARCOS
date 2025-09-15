@@ -1,0 +1,89 @@
+name: Deploy GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Set this if you want concurrency (avoid overlapping publishes)
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  # OPTION A: Direct deploy of repository root (uncomment to use)
+  #static-no-build:
+  #  runs-on: ubuntu-latest
+  #  steps:
+  #    - name: Checkout
+  #      uses: actions/checkout@v4
+  #    - name: Setup Pages
+  #      uses: actions/configure-pages@v5
+  #    - name: Upload artifact
+  #      uses: actions/upload-pages-artifact@v3
+  #      with:
+  #        path: .
+  #    - name: Deploy
+  #      id: deployment
+  #      uses: actions/deploy-pages@v4
+
+  # OPTION B: Build then deploy (default enabled). Adjust build commands/output as needed.
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # If you do not need Node (pure static), you can remove the next two steps.
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      # If you have a package.json; otherwise remove these.
+      - name: Install dependencies
+        if: hashFiles('package-lock.json') != ''
+        run: npm ci
+
+      # Adjust if you have a build script (e.g., "build") or remove if not needed.
+      - name: Build site
+        run: |
+          if [ -f package.json ]; then
+            if npm run | grep -q " build"; then
+              npm run build
+            else
+              echo "No build script found; copying root files to dist/"
+              mkdir -p dist
+              rsync -av --exclude 'dist' --exclude '.git' ./ dist/
+            fi
+          else
+            echo "No package.json; deploying repository root"
+            mkdir -p dist
+            rsync -av --exclude '.git' ./ dist/
+          fi
+
+      # OPTIONAL: Add SPA 404 fallback (uncomment if single page app)
+      # - name: Add SPA 404 fallback
+      #   run: |
+      #     if [ -f dist/index.html ]; then
+      #       cp dist/index.html dist/404.html
+      #     fi
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4
