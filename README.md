@@ -1,8 +1,35 @@
 # JCAS-NARCOS v1.0.0
 
-Welcome to JCAS-NARCOS - a modern React web application ready for Windows deployment.
+Welcome to JCAS-NARCOS - a modern React web application for medication box tracking.
 
-**🎉 Version 1.0.0 Release** - This is the first stable release optimized for Windows environments.
+**🎉 Version 1.0.0 Release** - This is the first stable release with GitHub Pages deployment.
+
+## 🌐 Live Demo
+
+The application is automatically deployed to GitHub Pages:
+**[https://morgang213.github.io/JCAS-NARCOS](https://morgang213.github.io/JCAS-NARCOS)**
+
+[![Build and Deploy](https://github.com/morgang213/JCAS-NARCOS/workflows/Build%20and%20Deploy%20to%20GitHub%20Pages/badge.svg)](https://github.com/morgang213/JCAS-NARCOS/actions)
+
+## 🚀 Deployment
+
+This project uses GitHub Actions for continuous deployment to GitHub Pages:
+
+- **Automatic Deployment**: Every push to the `main` branch triggers an automated build and deployment
+- **Build Process**: Tests are run, then the React app is built for production
+- **Deployment Target**: The built application is deployed to the `gh-pages` branch and served at the live demo URL
+
+### Manual Deployment
+
+To deploy manually or test the deployment process locally:
+
+```bash
+# Build the project
+npm run build
+
+# The build folder contains the static files ready for deployment
+# These files are automatically deployed by GitHub Actions
+```
 
 ## Quick Links
 - [Release Notes](./RELEASE_NOTES.md) - What's new in v1.0.0
