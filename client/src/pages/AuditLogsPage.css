@@ -1,0 +1,56 @@
+.audit-logs-page {
+  max-width: 1100px;
+}
+
+.log-time {
+  font-size: 13px;
+  color: #666;
+  white-space: nowrap;
+}
+
+.log-user {
+  font-weight: 600;
+}
+
+.log-target {
+  font-size: 13px;
+  color: #888;
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.action-badge {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.action-auth {
+  background: #e3f2fd;
+  color: #1565c0;
+}
+
+.action-box {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.action-user {
+  background: #f3e5f5;
+  color: #7b1fa2;
+}
+
+.action-inventory {
+  background: #fff3e0;
+  color: #e65100;
+}
+
+.action-default {
+  background: #f5f5f5;
+  color: #666;
+}

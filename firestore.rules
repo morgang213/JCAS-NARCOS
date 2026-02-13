@@ -1,0 +1,45 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    function isAdmin() {
+      return isAuthenticated() && request.auth.token.role == 'admin';
+    }
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // Users collection
+    // Admin: full access. Users: read own document only.
+    // PIN hashes should NEVER be returned to clients - 
+    // use server-side API for all user operations.
+    match /users/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      allow create, update, delete: if isAdmin();
+    }
+
+    // Medication boxes
+    // Admin: full CRUD. Users: read/update only assigned boxes.
+    match /medication-boxes/{boxId} {
+      allow read: if isAdmin() ||
+        (isAuthenticated() && request.auth.uid in resource.data.assignedTo);
+      allow create: if isAdmin();
+      allow update: if isAdmin() ||
+        (isAuthenticated() && request.auth.uid in resource.data.assignedTo);
+      allow delete: if isAdmin();
+    }
+
+    // Audit logs
+    // Server-write only (via Admin SDK). Clients can read.
+    // Admin: reads all. Users: reads own actions.
+    match /audit-logs/{logId} {
+      allow read: if isAdmin() ||
+        (isAuthenticated() && resource.data.userId == request.auth.uid);
+      allow write: if false; // Only server (Admin SDK) writes audit logs
+    }
+  }
+}
