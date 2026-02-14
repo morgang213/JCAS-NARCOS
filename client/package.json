@@ -2,7 +2,7 @@
   "name": "client",
   "version": "1.0.0",
   "private": true,
-  "homepage": "https://morgang213.github.io/JCAS-NARCOS",
+  "homepage": "https://morganstech.org",
   "dependencies": {
     "axios": "^1.7.9",
     "firebase": "^11.3.0",

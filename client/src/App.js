@@ -98,7 +98,7 @@ function AppRoutes() {
 
 function App() {
   return (
-    <Router basename="/JCAS-NARCOS">
+    <Router basename="/">
       <AuthProvider>
         <AppRoutes />
         <Toaster

@@ -33,6 +33,8 @@ app.use(express.json({ limit: '10kb' }));
 
 // CORS - allow frontend origins
 const ALLOWED_ORIGINS = [
+  'https://morganstech.org',
+  'https://www.morganstech.org',
   'https://morgang213.github.io',
   'http://localhost:3000',
 ];
