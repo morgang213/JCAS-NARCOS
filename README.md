@@ -1,91 +1,133 @@
-# JCAS-NARCOS v1.0.0
+# JCAS-NARCOS — Medication Box Tracker
 
-Welcome to JCAS-NARCOS - a modern React web application for medication box tracking.
+Full-stack web application for tracking controlled-substance medication boxes, built with React, Node.js/Express, and Firebase.
 
-**🎉 Version 1.0.0 Release** - This is the first stable release with GitHub Pages deployment.
+| Layer | Tech | Host |
+|-------|------|------|
+| Frontend | React 19 (CRA) | [GitHub Pages](https://morgang213.github.io/JCAS-NARCOS/) |
+| Backend | Node.js / Express | [Cloud Run](https://jcas-narcos-api-396083626249.us-central1.run.app) |
+| Auth & DB | Firebase Auth + Firestore | Google Cloud (project `jcas-narcos-d3c80`) |
 
-## 🌐 Live Demo
+[![Build and Deploy](https://github.com/morgang213/JCAS-NARCOS/actions/workflows/deploy.yml/badge.svg)](https://github.com/morgang213/JCAS-NARCOS/actions)
 
-The application is automatically deployed to GitHub Pages:
-**[https://morgang213.github.io/JCAS-NARCOS](https://morgang213.github.io/JCAS-NARCOS)**
+---
 
-[![Build and Deploy](https://github.com/morgang213/JCAS-NARCOS/workflows/Build%20and%20Deploy%20to%20GitHub%20Pages/badge.svg)](https://github.com/morgang213/JCAS-NARCOS/actions)
+## Features
 
-## 🚀 Deployment
+- **PIN + Username authentication** — 4-digit PIN login with account lockout (5 failures / 15 min)
+- **Role-based access** — Admin and standard user roles
+- **Medication box CRUD** — Create, view, edit, and track boxes and their contents
+- **Expiration scanning** — Dashboard alerts for expiring / expired medications
+- **Audit logging** — Timestamped record of every action
+- **Responsive UI** — Sidebar navigation, mobile-friendly layout
 
-This project uses GitHub Actions for continuous deployment to GitHub Pages:
+---
 
-- **Automatic Deployment**: Every push to the `main` branch triggers an automated build and deployment
-- **Build Process**: Tests are run, then the React app is built for production
-- **Deployment Target**: The built application is deployed to the `gh-pages` branch and served at the live demo URL
+## Project Structure
 
-### Manual Deployment
+```
+JCAS-NARCOS/
+├── client/               # React frontend (CRA)
+│   ├── public/
+│   └── src/
+│       ├── api/          # Axios client & endpoint wrappers
+│       ├── components/   # ProtectedRoute, Layout
+│       ├── contexts/     # AuthContext (Firebase)
+│       ├── firebase/     # Firebase client SDK config
+│       └── pages/        # Login, Dashboard, Inventory, BoxDetail, BoxForm, AdminUsers, AuditLogs
+├── server/               # Express API
+│   ├── src/
+│   │   ├── config/       # Firebase Admin SDK init
+│   │   ├── middleware/   # auth, validation
+│   │   ├── routes/       # auth, users, boxes, auditLogs
+│   │   └── services/     # authService, boxService, auditService
+│   ├── scripts/          # seed-admin.js
+│   └── Dockerfile
+├── firestore.rules
+├── firestore.indexes.json
+└── .github/workflows/    # CI/CD (GitHub Pages + Cloud Run)
+```
 
-To deploy manually or test the deployment process locally:
+---
+
+## Prerequisites
+
+- **Node.js** ≥ 18 (20 recommended)
+- **npm** ≥ 9
+- A **Firebase project** with Authentication (Email/Password) and Firestore enabled
+- A **service account key** JSON file for the server
+
+---
+
+## Environment Variables
+
+### Client (`client/.env`)
+
+```env
+REACT_APP_API_URL=http://localhost:8080
+REACT_APP_FIREBASE_API_KEY=<your-api-key>
+REACT_APP_FIREBASE_AUTH_DOMAIN=<project>.firebaseapp.com
+REACT_APP_FIREBASE_PROJECT_ID=<project-id>
+REACT_APP_FIREBASE_STORAGE_BUCKET=<project>.firebasestorage.app
+REACT_APP_FIREBASE_MESSAGING_SENDER_ID=<sender-id>
+REACT_APP_FIREBASE_APP_ID=<app-id>
+```
+
+### Server (`server/.env`)
+
+```env
+PORT=8080
+FIREBASE_SERVICE_ACCOUNT_PATH=./serviceAccountKey.json
+ALLOWED_ORIGINS=http://localhost:3000
+```
+
+> **Note:** Never commit `.env` files or `serviceAccountKey.json`. Both are git-ignored.
+
+---
+
+## Getting Started
 
 ```bash
-# Build the project
-npm run build
-
-# The build folder contains the static files ready for deployment
-# These files are automatically deployed by GitHub Actions
-```
-
-## Quick Links
-- [Release Notes](./RELEASE_NOTES.md) - What's new in v1.0.0
-- [Windows Deployment Guide](./WINDOWS_DEPLOYMENT.md) - Complete Windows setup instructions
-
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
-
-## Windows Installation
-
-For detailed Windows setup instructions, see our [Windows Deployment Guide](./WINDOWS_DEPLOYMENT.md).
-
-**Quick Start on Windows:**
-```cmd
-# Install dependencies
+# 1. Install all dependencies (monorepo workspaces)
 npm install
 
-# Start development server
-npm start
+# 2. Create .env files (see templates above)
 
-# Build for production
-npm run build
+# 3. Seed the first admin user
+npm run seed:admin
+
+# 4. Start both client and server in dev mode
+npm run dev
 ```
 
-## Available Scripts
+The client runs on `http://localhost:3000`, the API on `http://localhost:8080`.
 
-In the project directory, you can run:
+---
 
-### `npm start`
+## Deployment
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+### Frontend → GitHub Pages
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+Pushes to `main` that touch `client/**` trigger the [deploy workflow](.github/workflows/deploy.yml), which builds the React app and publishes to the `gh-pages` branch.
 
-### `npm test`
+### Backend → Google Cloud Run
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+The server is containerized via `server/Dockerfile` and deployed to Cloud Run. The [backend workflow](.github/workflows/deploy-backend.yml) automates this (requires Workload Identity Federation). Manual deploy:
 
-### `npm run build`
+```bash
+# Build & push image
+gcloud builds submit server/ \
+  --tag us-central1-docker.pkg.dev/jcas-narcos-d3c80/jcas-narcos/jcas-narcos-api
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+# Deploy to Cloud Run
+gcloud run deploy jcas-narcos-api \
+  --image us-central1-docker.pkg.dev/jcas-narcos-d3c80/jcas-narcos/jcas-narcos-api \
+  --region us-central1 \
+  --allow-unauthenticated
+```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+---
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## License
 
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+Private — all rights reserved.
